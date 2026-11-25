@@ -9,8 +9,9 @@ body{background:var(--bg);font:15px/1.6 Tahoma,Arial,sans-serif}
 main{max-width:1240px;padding:18px 24px}header{background:#223746;color:#fff;padding:13px 16px;border:1px solid #223746;gap:12px}header .brand{font-family:Arial,sans-serif;font-size:21px;font-weight:700;letter-spacing:0}header .brand span{color:#fff}header small,header .tag{color:#d9e3eb}header .tag{border:0;border-radius:0;font:12px Tahoma,Arial,sans-serif;letter-spacing:0;text-transform:none;padding:0}header button{background:#344d60;color:#fff;border-color:#718491}header button:hover:not(:disabled){background:#456073;color:#fff}
 h1{font-size:clamp(24px,3vw,36px);letter-spacing:0;margin:22px 0 4px}h2{font-size:17px;margin:6px 0 9px}.eyebrow{font:700 12px/1.5 Tahoma,Arial,sans-serif;letter-spacing:0;text-transform:none;color:#42576b}.card{border-radius:2px;padding:16px;background:#fff;border:1px solid var(--line)}button{font:600 14px Tahoma,Arial,sans-serif;border-radius:2px;background:#f3f5f7;color:var(--fg);padding:9px 12px}button:hover:not(:disabled){background:#e1eaf2;border-color:#155784}button.primary{background:#20577d;color:white;border-color:#20577d}button.primary:hover:not(:disabled){background:#184361}button.selected{border-color:#155784;box-shadow:inset 0 -3px #155784}button.primary.selected{box-shadow:inset 0 -3px #a9d1e9}.node{border-radius:2px;background:#f3f6f8;box-shadow:none;padding:15px 8px}.node.active{border:1px solid #155784;background:#e2edf5;box-shadow:none}.node svg{stroke:#315b78}.link{color:#435365}.link.active .track:after{background:#155784;box-shadow:none;border-radius:1px;width:12px;height:9px;top:-3px}.gate strong{font-family:Consolas,monospace;letter-spacing:0;font-size:clamp(16px,2vw,23px)}.progress div{border-radius:0}.log{background:#f5f7f9;border:1px solid var(--line);padding:6px 10px}.log li:last-child{color:#155784}.result{border-radius:2px;background:#f5f7f9}.result.pass{color:#116445;border-color:#8cbaa8;background:#edf7f0}.result.fail{color:#a52828;border-color:#d6abab;background:#fff0f0}.quiz{border-inline-start:4px solid #315b78}footer{font-size:12px}a{color:#155784}.topology,.log,#counter,#state,#traffic,.brand{direction:ltr}.log{text-align:left}.topology .node small{display:block}html[lang=ar] body{font-family:Tahoma,Arial,sans-serif}html[lang=ar] .topology .node small,html[lang=ar] .topology .link span{direction:rtl;unicode-bidi:isolate}html[lang=ar] .log li{unicode-bidi:plaintext}html[lang=ar] .quiz button{margin:4px 0 4px 4px}html[lang=ar] h1{letter-spacing:0}#lang{white-space:nowrap}body.present h1{font-size:clamp(28px,3vw,45px)}
 
+#lang{display:inline-flex;direction:ltr;gap:0;border:1px solid #b4c7d4;background:#fff;padding:2px;align-items:center;flex-shrink:0}#lang button{background:#fff;color:#223746;border:0;padding:9px 13px;font-size:14px;min-height:38px;box-shadow:none}#lang button[aria-pressed="true"]{background:#20577d;color:#fff}#lang button:hover:not([aria-pressed="true"]){background:#e0e9f0}#lang button:focus-visible{outline:2px solid #d5a132;outline-offset:-2px}@media(max-width:700px){header .row{width:100%;justify-content:flex-start}header .tag{flex-basis:100%}#lang{order:-1}} 
 </style></head><body><main>
-<header><div class="brand">PORT<span>GUARD</span> <small style="font-size:11px;letter-spacing:0">/ LAB 32</small></div><div class="row"><span class="tag">Educational simulation · IEEE 802.1X</span><button id="lang" type="button" aria-label="Switch language / تبديل اللغة">العربية</button><button id="present" aria-pressed="false">Presentation mode</button></div></header>
+<header><div class="brand">PORT<span>GUARD</span> <small style="font-size:11px;letter-spacing:0">/ LAB 32</small></div><div class="row"><span class="tag">Educational simulation · IEEE 802.1X</span><div id="lang" role="group" aria-label="Language / اللغة"><button id="lang-en" type="button" lang="en" aria-pressed="true">English</button><button id="lang-ar" type="button" lang="ar" aria-pressed="false">العربية</button></div><button id="present" aria-pressed="false">Presentation mode</button></div></header>
 <h1>IEEE 802.1X — Network access control</h1><p class="muted">A live visual model of port-based network access control. No real network traffic or credentials.</p>
 <div class="controls"><button id="valid" class="primary">01 · Authorized student</button><button id="invalid">02 · Unknown device</button><button id="next" disabled>Next message →</button><button id="auto" disabled>▶ Auto play</button><button id="reset">Reset</button></div>
 <section class="card" aria-label="Network topology"><div class="row"><div class="eyebrow">Network topology / live state</div><small id="scenario">Select a scenario to begin</small></div><div class="topology">
@@ -53,14 +54,17 @@ function translateNode(n){
 function apply(){
  document.documentElement.lang=language;
  document.documentElement.dir=language==='ar'?'rtl':'ltr';
- document.getElementById('lang').textContent=language==='ar'?'English':'العربية';
+ document.getElementById('lang-en').setAttribute('aria-pressed',String(language==='en'));
+ document.getElementById('lang-ar').setAttribute('aria-pressed',String(language==='ar'));
  translateNode(document.body);
 }
-document.getElementById('lang').addEventListener('click',function(){
- language=language==='en'?'ar':'en';
+function chooseLanguage(value){
+ language=value;
  try{localStorage.setItem('portguard-language',language)}catch(e){}
  apply();
-});
+}
+document.getElementById('lang-en').addEventListener('click',()=>chooseLanguage('en'));
+document.getElementById('lang-ar').addEventListener('click',()=>chooseLanguage('ar'));
 new MutationObserver(function(records){
  for(const r of records){
  if(r.type==='characterData')translateNode(r.target);
